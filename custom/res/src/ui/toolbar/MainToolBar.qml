@@ -120,6 +120,7 @@ Rectangle {
                 id: customButton
                 anchors.verticalCenter: parent.verticalCenter
                 Layout.preferredHeight: viewButtonRow.height
+                visible:                currentToolbar === flyViewToolbar
                 text: CustomGPSWaypointRecoder.isRecording ? "Stop Path Recording" : "Start Path Recording"
                 onClicked: {
                     if (CustomGPSWaypointRecoder.isRecording) {
@@ -144,8 +145,10 @@ Rectangle {
             }
             // Minimium waypoint distance slider
             Slider {
+                visible:                currentToolbar === flyViewToolbar
                 id: recordDistanceSlider
                 anchors.verticalCenter: parent.verticalCenter
+                leftPadding: ScreenTools.defaultFontPixelWidth * 2
                 stepSize: 0.5
                 from: 0.5
                 to: 10
@@ -154,15 +157,19 @@ Rectangle {
                 }
                 // default is 1 meters
                 value: 2
-                width: 120
+                width: 150
             }
             // Minimium waypoint distance label
             Label {
+                visible:                currentToolbar === flyViewToolbar
+                leftPadding: ScreenTools.defaultFontPixelWidth * 2
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Waypoint Distance Meters: " + CustomGPSWaypointRecoder.minimiumDistance
+                text: " Waypoint Distance (m): " + CustomGPSWaypointRecoder.minimiumDistance
                 color: "white"
                 //color: "black"
-                font.pixelSize: 20
+                //font.pixelSize: 20
+                font.family:        ScreenTools.demiboldFontFamily
+                font.pointSize:     ScreenTools.mediumFontPointSize
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
@@ -171,6 +178,7 @@ Rectangle {
 
     //-------------------------------------------------------------------------
     //-- Branding Logo
+
     Image {
         anchors.right:          parent.right
         anchors.top:            parent.top
