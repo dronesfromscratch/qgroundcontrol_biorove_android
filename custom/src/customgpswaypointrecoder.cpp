@@ -46,6 +46,8 @@ void CustomGPSWaypointRecoder::saveMission(QUrl filePath)
     rallyJson["points"] = QJsonArray();
     rallyJson["version"] = 2;
 
+    qDebug() << "writing the following to file" << filePath.path();
+
     auto activeVehicle = _toolbox->multiVehicleManager()->activeVehicle();
     QJsonValue coordinateValue;
     JsonHelper::saveGeoCoordinate(activeVehicle->homePosition(), true /* writeAltitude */, coordinateValue);
@@ -83,7 +85,7 @@ void CustomGPSWaypointRecoder::saveMission(QUrl filePath)
     planJson[kJsonGeoFenceObjectKey] = fenceJson;
     planJson[kJsonRallyPointsObjectKey] = rallyJson;
     QFile file(filePath.path());
-    if (!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate))
+    if (!file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate))            
         return;
 
     file.write(QJsonDocument(planJson).toJson());

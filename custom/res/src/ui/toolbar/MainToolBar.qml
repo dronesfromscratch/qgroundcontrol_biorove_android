@@ -32,6 +32,7 @@ Rectangle {
     property var    _activeVehicle:     QGroundControl.multiVehicleManager.activeVehicle
     property bool   _communicationLost: _activeVehicle ? _activeVehicle.vehicleLinkManager.communicationLost : false
     property color  _mainStatusBGColor: qgcPal.brandingPurple
+    property var    _appSettings:                       QGroundControl.settingsManager.appSettings
 
     QGCPalette { id: qgcPal }
 
@@ -116,36 +117,48 @@ Rectangle {
             }
 
             // Start/Stop Path Recording button
-            Button {
+            QGCButton {
                 id: customButton
                 anchors.verticalCenter: parent.verticalCenter
                 Layout.preferredHeight: viewButtonRow.height
                 visible:                currentToolbar === flyViewToolbar
                 text: CustomGPSWaypointRecoder.isRecording ? "Stop Path Recording" : "Start Path Recording"
+                caution: CustomGPSWaypointRecoder.isRecording
+
                 onClicked: {
                     if (CustomGPSWaypointRecoder.isRecording) {
                         CustomGPSWaypointRecoder.stopRecording()
-                        selectSaveRecordingFile.open()
+                        fileDialog.title =          qsTr("Save Mission Plan")
+                        fileDialog.planFiles =      true
+                        fileDialog.selectExisting = false
+                        fileDialog.nameFilters =   ["Plan (*.plan)", "All files (*)"]
+                        fileDialog.openForSave()
                     } else {
                         CustomGPSWaypointRecoder.startRecording()
                     }
                 }
-                // Save file dialog
-                FileDialog {
-                    id: selectSaveRecordingFile
-                    title: qsTr("Save Waypont record as mission?")
-                    selectFolder: false
-                    selectExisting: false
-                    defaultSuffix: "plan"
-                    onAccepted: {
-                        CustomGPSWaypointRecoder.saveMission(selectSaveRecordingFile.fileUrl)
+
+                QGCFileDialog {
+                    id:             fileDialog
+                    folder:         _appSettings ? _appSettings.missionSavePath : ""
+
+                    property bool planFiles: true    ///< true: working with plan files, false: working with kml file
+
+                    onAcceptedForSave: {
+                        if (planFiles) {
+                             CustomGPSWaypointRecoder.saveMission(file)
+                        }
                         close()
                     }
+
                 }
+
+
             }
             // Minimium waypoint distance slider
             Slider {
                 visible:                currentToolbar === flyViewToolbar
+                enabled: !CustomGPSWaypointRecoder.isRecording
                 id: recordDistanceSlider
                 anchors.verticalCenter: parent.verticalCenter
                 leftPadding: ScreenTools.defaultFontPixelWidth * 2
@@ -164,10 +177,8 @@ Rectangle {
                 visible:                currentToolbar === flyViewToolbar
                 leftPadding: ScreenTools.defaultFontPixelWidth * 2
                 anchors.verticalCenter: parent.verticalCenter
-                text: " Waypoint Distance (m): " + CustomGPSWaypointRecoder.minimiumDistance
-                color: "white"
-                //color: "black"
-                //font.pixelSize: 20
+                text: "WP Distance: " + CustomGPSWaypointRecoder.minimiumDistance + "m"
+                color: qgcPal.text
                 font.family:        ScreenTools.demiboldFontFamily
                 font.pointSize:     ScreenTools.mediumFontPointSize
                 verticalAlignment: Text.AlignVCenter
