@@ -121,7 +121,7 @@ Rectangle {
                 id: customButton
                 anchors.verticalCenter: parent.verticalCenter
                 Layout.preferredHeight: viewButtonRow.height
-                visible:                currentToolbar === flyViewToolbar
+                visible:                currentToolbar === flyViewToolbar && _activeVehicle
                 text: CustomGPSWaypointRecoder.isRecording ? "Stop Path Recording" : "Start Path Recording"
                 caution: CustomGPSWaypointRecoder.isRecording
 
@@ -137,8 +137,8 @@ Rectangle {
                         CustomGPSWaypointRecoder.startRecording()
                     }
                 }
-
-                QGCFileDialog {
+            QGCFileDialog
+                {
                     id:             fileDialog
                     folder:         _appSettings ? _appSettings.missionSavePath : ""
 
@@ -157,7 +157,7 @@ Rectangle {
             }
             // Minimium waypoint distance slider
             Slider {
-                visible:                currentToolbar === flyViewToolbar
+                visible:                currentToolbar === flyViewToolbar && _activeVehicle
                 enabled: !CustomGPSWaypointRecoder.isRecording
                 id: recordDistanceSlider
                 anchors.verticalCenter: parent.verticalCenter
@@ -174,7 +174,7 @@ Rectangle {
             }
             // Minimium waypoint distance label
             Label {
-                visible:                currentToolbar === flyViewToolbar
+                visible:                currentToolbar === flyViewToolbar && _activeVehicle
                 leftPadding: ScreenTools.defaultFontPixelWidth * 2
                 anchors.verticalCenter: parent.verticalCenter
                 text: "WP Distance: " + CustomGPSWaypointRecoder.minimiumDistance + "m"
